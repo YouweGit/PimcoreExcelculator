@@ -160,20 +160,14 @@ Installation
 ------------
 
 Plugin can be installed through composer. Add json to your composer.json:
-    {
-        "config": {
-            "document-root-path": "htdocs"
-        },
-        "require": {
-            "youwe/pimcore-excelculator": "^0.1.0"
-        },
-    }
+
+    composer require youwe/pimcore-excelculator
 
 Activate/enable the plugin in pimcore's extras->extensions list.
 
 Also, add this to your .gitignore:
 
-    plugins/PimcoreExcelculator
+    /plugins/PimcoreExcelculator
     
     
  
