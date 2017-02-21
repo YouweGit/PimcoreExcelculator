@@ -5,8 +5,10 @@ namespace PimcoreExcelculator;
 class PimcoreExcelculatorLogger
 {
     var $instance_id;
+    var $service;
 
-    public function __construct() {
+    public function __construct($service) {
+        $this->service = $service;
         $this->instance_id = substr(uniqid(),0,5);
     }
 
@@ -18,7 +20,9 @@ class PimcoreExcelculatorLogger
 
         $entry = $this->instance_id . ' ' . $message;
         \Pimcore\Log\Simple::log('PimcoreExcelculator', $entry);
-        echo $entry . "\r\n";
+        if ($this->service) {
+            echo $entry . "\r\n";
+        }
     }
 
 }

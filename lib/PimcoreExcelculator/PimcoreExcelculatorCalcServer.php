@@ -9,8 +9,11 @@ class PimcoreExcelculatorCalcServer
     var $files;
     var $logger;
 
-    public function __construct() {
-        $this->logger = new PimcoreExcelculatorLogger();
+    var $service;
+
+    public function __construct($service = true) {
+        $this->service = $service;
+        $this->logger = new PimcoreExcelculatorLogger($service);
         $this->logger->log('Server class initializing, memory limit: ' . ini_get('memory_limit'));
         $this->logger->log('Loading config');
         $this->cnf = \PimcoreExcelculator\Plugin::getConfig()->toArray();

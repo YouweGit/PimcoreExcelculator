@@ -7,6 +7,7 @@ class PimcoreExcelculatorCalc
     var $cnf;
     var $values;
     var $file;
+    var $localService;
 
     public function __construct($file = null, $values = null) {
         $this->file = $file;
@@ -29,12 +30,23 @@ class PimcoreExcelculatorCalc
 
         // =============
 
-        return $this->makeRequest([
-            'action'    => 'get',
-            'file'      => $this->file,
-            'input'     => $this->values,
-            'output'    => $fields
-        ]);
+        $service = true;
+        $service = isset($this->cnf['useService']) ? $this->cnf['useService'] : $service;
+
+        if($service) {     // use the service
+            return $this->makeRequest([
+                'action' => 'get',
+                'file' => $this->file,
+                'input' => $this->values,
+                'output' => $fields
+            ]);
+        }
+        else {   // do not use service
+            if(!$this->localService) {
+                $this->localService = new PimcoreExcelculatorCalcServer(false);
+            }
+            return $this->localService->get($this->file, $this->values, $fields);
+        }
     }
 
     public function status() {
@@ -50,14 +62,14 @@ class PimcoreExcelculatorCalc
         $binding = 'unix:///tmp/excel.sock';
         $binding = $this->cnf['binding'] ?: $binding;
 
-        $retryCounter = 10;
+        $retryCounter = 15;
         $server = false;
 
         while ($server === false && $retryCounter--) {
             $server = @stream_socket_client($binding);
             if ($server === false) {
-                // wait half a second before retrying
-                usleep(500000);
+                // wait before retrying
+                usleep(50000);
             }
         }
 
