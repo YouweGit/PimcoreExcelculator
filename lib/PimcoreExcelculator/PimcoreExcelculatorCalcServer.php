@@ -30,7 +30,7 @@ class PimcoreExcelculatorCalcServer
                 $this->logger->log($errmsg);
                 throw new \Exception($errmsg, 800);
             }
-            $this->files[$label] = \PHPExcel_IOFactory::load($file);
+            $this->files[$label] = \PhpOffice\PhpSpreadsheet\IOFactory::load($file);
             $this->logger->log('Loading complete: ' . $label . ' (' . $file . ')');
         }
     }
@@ -38,24 +38,24 @@ class PimcoreExcelculatorCalcServer
     public function get($fileLabel, $input, $output)
     {
         $this->logger->log('Processing request for ' . $fileLabel . ' start');
-        $objPHPExcel = $this->files[$fileLabel];
+        $excelObject = $this->files[$fileLabel];
         foreach ($input as $cell => $value) {
             // make the fields formatted like [sheetname].[field] work as well
             if(strstr($cell, '.') !== FALSE) {
                 list($sheet, $cell) = explode('.', $cell);
-                $objPHPExcel->setActiveSheetIndexByName($sheet);
+                $excelObject->setActiveSheetIndexByName($sheet);
             }
-            $objPHPExcel->getActiveSheet()->SetCellValue($cell, $value);
+            $excelObject->getActiveSheet()->SetCellValue($cell, $value);
         }
         $result = [];
-        \PHPExcel_Calculation::getInstance($objPHPExcel)->disableCalculationCache();
+        \PhpOffice\PhpSpreadsheet\Calculation\Calculation::getInstance($excelObject)->disableCalculationCache();
         foreach($output as $outputcell) {
             // make the fields formatted like [sheetname].[field] work as well
             if(strstr($outputcell, '.') !== FALSE) {
                 list($outputsheet, $outputcell) = explode('.', $outputcell);
-                $objPHPExcel->setActiveSheetIndexByName($outputsheet);
+                $excelObject->setActiveSheetIndexByName($outputsheet);
             }
-            $result[$outputcell] = $objPHPExcel->getActiveSheet()->getCell($outputcell)->getCalculatedValue();
+            $result[$outputcell] = $excelObject->getActiveSheet()->getCell($outputcell)->getCalculatedValue();
         }
         $this->logger->log('Processing request for ' . $fileLabel . ' complete ' . var_export($result, true));
         return $result;
