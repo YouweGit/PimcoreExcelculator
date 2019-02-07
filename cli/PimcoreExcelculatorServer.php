@@ -54,7 +54,7 @@ while (true) {
             'Memory usage: pure %01.2f real %01.2f peak %01.2f realpeak %01.2f',
             $mem_pure, $mem_real, $mem_peak, $mem_peak_real));
     }
-    $client = stream_socket_accept($server, -1);
+    $client = @stream_socket_accept($server, -1);
     if (false !== $client) {
         $input = '';
 //        while(!strstr($input,chr(0))) {
